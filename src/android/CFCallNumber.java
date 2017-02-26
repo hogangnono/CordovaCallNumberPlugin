@@ -2,13 +2,11 @@ package mx.ferreyra.callnumber;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
-import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.List;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -18,42 +16,22 @@ import android.content.pm.PackageManager;
 public class CFCallNumber extends CordovaPlugin {
   public static final int CALL_REQ_CODE = 0;
   public static final int PERMISSION_DENIED_ERROR = 20;
-  public static final String CALL_PHONE = Manifest.permission.CALL_PHONE;
 
   private CallbackContext callbackContext;        // The callback context from which we were invoked.
   private JSONArray executeArgs;
-
-  protected void getCallPermission(int requestCode) {
-    cordova.requestPermission(this, requestCode, CALL_PHONE);
-  }
 
   @Override
   public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
     this.callbackContext = callbackContext;
     this.executeArgs = args;
 
-    if (cordova.hasPermission(CALL_PHONE)) {
-      callPhone(executeArgs);
-    } else {
-      getCallPermission(CALL_REQ_CODE);
-    }
-
+    callPhone(executeArgs);
     return true;
   }
 
   public void onRequestPermissionResult(int requestCode, String[] permissions,
                                         int[] grantResults) throws JSONException {
-    for (int r : grantResults) {
-      if (r == PackageManager.PERMISSION_DENIED) {
-        this.callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, PERMISSION_DENIED_ERROR));
-        return;
-      }
-    }
-    switch (requestCode) {
-      case CALL_REQ_CODE:
-        callPhone(executeArgs);
-        break;
-    }
+    return;
   }
 
   private void callPhone(JSONArray args) throws JSONException {
@@ -64,12 +42,17 @@ public class CFCallNumber extends CordovaPlugin {
       number = String.format("tel:%s", number);
     }
     try {
-      Intent intent = new Intent(isTelephonyEnabled() ? Intent.ACTION_CALL : Intent.ACTION_VIEW);
+      Intent intent = new Intent(isTelephonyEnabled() ? Intent.ACTION_DIAL : Intent.ACTION_VIEW);
       intent.setData(Uri.parse(number));
 
       boolean bypassAppChooser = Boolean.parseBoolean(args.getString(1));
+
       if (bypassAppChooser) {
-        intent.setPackage(getDialerPackage(intent));
+        String packageName = getDialerPackage(intent);
+
+        if (!packageName.equals("")) {
+          intent.setPackage(getDialerPackage(intent));
+        }
       }
 
       cordova.getActivity().startActivity(intent);
@@ -91,6 +74,12 @@ public class CFCallNumber extends CordovaPlugin {
     for (int i = 0; i < activities.size(); i++) {
       if (activities.get(i).toString().toLowerCase().contains("com.android.server.telecom")) {
         return "com.android.server.telecom";
+      }
+      if (activities.get(i).toString().toLowerCase().contains("com.android.dialer/")) {
+        return "com.android.dialer";
+      }
+      if (activities.get(i).toString().toLowerCase().contains("com.skt.prod.dialer")) {
+        return "com.skt.prod.dialer";
       }
       if (activities.get(i).toString().toLowerCase().contains("com.android.phone")) {
         return "com.android.phone";
