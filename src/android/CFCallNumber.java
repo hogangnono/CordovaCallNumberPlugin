@@ -75,12 +75,6 @@ public class CFCallNumber extends CordovaPlugin {
       if (activities.get(i).toString().toLowerCase().contains("com.android.server.telecom")) {
         return "com.android.server.telecom";
       }
-      if (activities.get(i).toString().toLowerCase().contains("com.android.dialer/")) {
-        return "com.android.dialer";
-      }
-      if (activities.get(i).toString().toLowerCase().contains("com.skt.prod.dialer")) {
-        return "com.skt.prod.dialer";
-      }
       if (activities.get(i).toString().toLowerCase().contains("com.android.phone")) {
         return "com.android.phone";
       } else if (activities.get(i).toString().toLowerCase().contains("call")) {
