@@ -1,6 +1,6 @@
 {
   "name": "call-number",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Call Number from Cordova Application",
   "cordova": {
     "id": "call-number",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Rohfosho/CordovaCallNumberPlugin.git"
+    "url": "git+https://github.com/hogangnono/CordovaCallNumberPlugin.git"
   },
   "keywords": [
     "cordova",
