@@ -1,6 +1,6 @@
 {
   "name": "call-number",
-  "version": "1.0.2",
+  "version": "1.0.2-hogangnono",
   "description": "Call Number from Cordova Application",
   "cordova": {
     "id": "call-number",
@@ -22,10 +22,10 @@
     "cordova-ios",
     "cordova-android"
   ],
-  "author": "",
+  "author": "hogangnono",
   "license": "Apache 2.0",
   "bugs": {
-    "url": "https://github.com/Rohfosho/CordovaCallNumberPlugin/issues"
+    "url": "https://github.com/hogangnono/CordovaCallNumberPlugin/issues"
   },
-  "homepage": "https://github.com/Rohfosho/CordovaCallNumberPlugin#readme"
+  "homepage": "https://github.com/hogangnono/CordovaCallNumberPlugin#readme"
 }
