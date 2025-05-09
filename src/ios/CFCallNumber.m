@@ -7,27 +7,30 @@
 
     [self.commandDelegate runInBackground:^{
 
-        CDVPluginResult* pluginResult = nil;
         NSString* number = [command.arguments objectAtIndex:0];
-        number = [number stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        number = [number stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLHostAllowedCharacterSet]];
 
         if( ! [number hasPrefix:@"tel:"]){
             number =  [NSString stringWithFormat:@"tel:%@", number];
         }
 
-        if(![[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:number]]) {
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"NoFeatureCallSupported"];
+        NSURL *url = [NSURL URLWithString:number];
+        if(![[UIApplication sharedApplication] canOpenURL:url]) {
+            CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"NoFeatureCallSupported"];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }
-        else if(![[UIApplication sharedApplication] openURL:[NSURL URLWithString:number]]) {
-            // missing phone number
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"CouldNotCallPhoneNumber"];
-        } else {
-            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        else {
+            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
+                CDVPluginResult* pluginResult = nil;
+                if (!success) {
+                    // missing phone number
+                    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"CouldNotCallPhoneNumber"];
+                } else {
+                    pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+                }
+                [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            }];
         }
-
-        // return result
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-
     }];
 }
 
