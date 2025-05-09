@@ -20,7 +20,7 @@
             [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         }
         else {
-            [[UIApplication sharedApplication] open:url options:@{} completionHandler:^(BOOL success) {
+            [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
                 CDVPluginResult* pluginResult = nil;
                 if (!success) {
                     // missing phone number
